@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -36,6 +37,17 @@ export async function PostPage({ postId }: { postId: string }) {
     <PostPageLayout>
       <article>
         <h1 className="mt-4 text-3xl font-bold">{post.title}</h1>
+        {post.imageUrl && (
+          <div className="relative mt-4 aspect-video overflow-hidden rounded-lg">
+            <Image
+              src={post.imageUrl}
+              alt={post.title}
+              fill
+              sizes="(min-width: 672px) 672px, 100vw"
+              className="object-cover"
+            />
+          </div>
+        )}
         <p className="mt-4 text-lg">{post.text}</p>
       </article>
     </PostPageLayout>

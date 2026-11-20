@@ -16,7 +16,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null);
+    const isForm = request.headers
+      .get("content-type")
+      ?.startsWith("multipart/form-data");
+    const body = isForm
+      ? await request
+          .formData()
+          .then(Object.fromEntries)
+          .catch(() => null)
+      : await request.json().catch(() => null);
     const post = await createPost(body);
     return NextResponse.json(post, { status: 201 });
   } catch (error) {
@@ -24,13 +32,7 @@ export async function POST(request: Request) {
   }
 }
 
-function handleError({
-  error,
-  message,
-}: {
-  error: unknown;
-  message: string;
-}) {
+function handleError({ error, message }: { error: unknown; message: string }) {
   if (error instanceof ValidationError) {
     return NextResponse.json(
       { error: message, issues: error.fieldErrors },

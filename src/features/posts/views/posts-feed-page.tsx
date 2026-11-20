@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { CreatePostModal } from "../components/create-post-modal";
 import { PostList } from "../components/post-list";
 import { PostListSkeleton } from "../components/post-list-skeleton";
 import { PostsPagination } from "../components/posts-pagination";
@@ -34,7 +35,10 @@ export function PostsFeedPage({
 }: Pick<PageProps<"/">, "searchParams">) {
   return (
     <main className="mx-auto w-full max-w-2xl p-8">
-      <h1 className="text-3xl font-bold">Posts</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Posts</h1>
+        <CreatePostModal />
+      </div>
       <Suspense fallback={<PostListSkeleton />}>
         <PostsFeed searchParams={searchParams} />
       </Suspense>

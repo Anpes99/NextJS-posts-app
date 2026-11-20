@@ -13,5 +13,6 @@ model Post {
   id        Int      @id @default(autoincrement())
   title     String
   text      String
+  imageUrl  String?
   createdAt DateTime @default(now())
 }
