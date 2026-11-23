@@ -1,5 +1,5 @@
 import "server-only";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { db } from "@/server/db";
 import { saveImage } from "@/server/uploads";
 import { parseOrThrow } from "@/server/validation";
@@ -11,6 +11,7 @@ export async function createPost(input: unknown): Promise<Post> {
   const { image, ...data } = parseOrThrow({ schema: createPostSchema, input });
   const imageUrl = image ? await saveImage({ file: image }) : null;
   const post = await db.post.create({ data: { ...data, imageUrl } });
-  revalidateTag(POSTS_LIST_TAG, { expire: 0 });
+  // read-your-own-writes: the server action returns automatically re-rendered page with the new post
+  updateTag(POSTS_LIST_TAG);
   return post;
 }

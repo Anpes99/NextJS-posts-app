@@ -1,45 +1,41 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
+import { createPostAction } from "../server/actions/create-post";
 
 type FieldErrors = Record<string, string[] | undefined>;
 
 const inputClass =
   "mt-1 w-full rounded border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700";
 
+function FieldError({ messages }: { messages?: string[] }) {
+  if (!messages?.length) return null;
+  return <p className="mt-1 text-sm text-red-600">{messages[0]}</p>;
+}
+
 export function CreatePostModal() {
-  const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     setLoading(true);
+    setFormError(null);
 
     try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        body: new FormData(form), // multipart/form-data, so the image is included
-      });
-
-      if (response.ok) {
-        form.reset();
-        setErrors({});
-        setFormError(null);
-        dialogRef.current?.close();
-        router.refresh();
+      const result = await createPostAction(new FormData(form));
+      if (!result.ok) {
+        setErrors(result.errors);
         return;
       }
-
-      const body = await response.json().catch(() => null);
-      setErrors(body?.issues ?? {});
-      setFormError(response.status === 400 ? null : "Something went wrong. Try again.");
+      form.reset();
+      setErrors({});
+      dialogRef.current?.close();
     } catch {
-      setFormError("Network error. Check your connection and try again.");
+      setFormError("Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
@@ -67,13 +63,24 @@ export function CreatePostModal() {
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <label className="block">
             <span className="text-sm font-medium">Title</span>
-            <input name="title" required maxLength={120} className={inputClass} />
+            <input
+              name="title"
+              required
+              maxLength={120}
+              className={inputClass}
+            />
             <FieldError messages={errors.title} />
           </label>
 
           <label className="block">
             <span className="text-sm font-medium">Text</span>
-            <textarea name="text" required maxLength={5000} rows={5} className={inputClass} />
+            <textarea
+              name="text"
+              required
+              maxLength={5000}
+              rows={5}
+              className={inputClass}
+            />
             <FieldError messages={errors.text} />
           </label>
 
@@ -110,9 +117,4 @@ export function CreatePostModal() {
       </dialog>
     </>
   );
-}
-
-function FieldError({ messages }: { messages?: string[] }) {
-  if (!messages?.length) return null;
-  return <p className="mt-1 text-sm text-red-600">{messages[0]}</p>;
 }
