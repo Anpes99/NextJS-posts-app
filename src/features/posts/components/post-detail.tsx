@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPost } from "../server/queries/get-post";
+import { EditablePost } from "./editable-post";
 
 export function PostDetailSkeleton() {
   return (
@@ -20,20 +21,22 @@ export async function PostDetail({ postId }: { postId: string }) {
   }
 
   return (
-    <article>
-      <h1 className="text-3xl font-bold">{post.title}</h1>
-      {post.imageUrl && (
-        <div className="relative mt-4 aspect-video overflow-hidden rounded-lg">
-          <Image
-            src={post.imageUrl}
-            alt={post.title}
-            fill
-            sizes="(min-width: 672px) 672px, 100vw"
-            className="object-cover"
-          />
-        </div>
-      )}
-      <p className="mt-4 text-lg">{post.text}</p>
-    </article>
+    <EditablePost post={{ id: post.id, text: post.text }}>
+      <article>
+        <h1 className="text-3xl font-bold">{post.title}</h1>
+        {post.imageUrl && (
+          <div className="relative mt-4 aspect-video overflow-hidden rounded-lg">
+            <Image
+              src={post.imageUrl}
+              alt={post.title}
+              fill
+              sizes="(min-width: 672px) 672px, 100vw"
+              className="object-cover"
+            />
+          </div>
+        )}
+        <p className="mt-4 text-lg">{post.text}</p>
+      </article>
+    </EditablePost>
   );
 }

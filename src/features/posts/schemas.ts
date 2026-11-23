@@ -21,6 +21,11 @@ export type CreatePostInput = z.infer<typeof createPostSchema>;
 
 export const postIdSchema = z.coerce.number().int().positive();
 
+export const updatePostSchema = z.object({
+  postId: postIdSchema,
+  text: z.string().trim().min(1, "Text is required").max(5000),
+});
+
 export const listPostsQuerySchema = z.object({
   cursor: postIdSchema.optional(),
   limit: z.coerce
