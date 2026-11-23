@@ -4,6 +4,7 @@ A small posts app (create, view, edit, delete) built to practice the core featur
 
 - App Router (layouts, dynamic routes, `loading` / `error` / `not-found` files)
 - React Server Components (server-rendered, fetching data directly with Prisma)
+- Server/client boundaries (`"use client"`, `"use server"`, `server-only`)
 - Cache Components (`"use cache"`, `cacheTag`, `updateTag`)
 - Partial Prerendering (static shell + streamed dynamic content)
 - Streaming with Suspense
