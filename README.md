@@ -1,6 +1,6 @@
 # Next.js Posts App
 
-A small Next.js 16 posts app that uses:
+A small posts app built to practice the core features of Next.js 16:
 
 - Cache Components (`"use cache"`, `cacheTag`, `updateTag`)
 - Server Actions
