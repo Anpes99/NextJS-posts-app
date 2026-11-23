@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode, type SubmitEvent } from "react";
+import { deletePostAction } from "../server/actions/delete-post";
 import { updatePostAction } from "../server/actions/update-post";
 
 type FieldErrors = Record<string, string[] | undefined>;
@@ -47,13 +48,28 @@ export function EditablePost({
     return (
       <>
         {children}
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="mt-6 rounded border border-gray-300 px-4 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-        >
-          Edit
-        </button>
+        <div className="mt-6 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="rounded border border-gray-300 px-4 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+          >
+            Edit
+          </button>
+          <form
+            action={() => deletePostAction(post.id)}
+            onSubmit={(event) => {
+              if (!confirm("Delete this post?")) event.preventDefault();
+            }}
+          >
+            <button
+              type="submit"
+              className="rounded border border-red-300 px-4 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
+            >
+              Delete
+            </button>
+          </form>
+        </div>
       </>
     );
   }

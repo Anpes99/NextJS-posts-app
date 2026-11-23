@@ -1,6 +1,6 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const UPLOAD_DIR = path.join(process.cwd(), "uploads");
@@ -44,4 +44,10 @@ export async function readUpload({
   } catch {
     return null;
   }
+}
+
+export async function deleteImage({ url }: { url: string }): Promise<void> {
+  const filename = url.replace(/^\/uploads\//, "");
+  if (!FILENAME_PATTERN.test(filename)) return;
+  await rm(path.join(UPLOAD_DIR, filename), { force: true });
 }
