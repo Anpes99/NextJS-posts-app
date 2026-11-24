@@ -1,8 +1,10 @@
-import type { Post } from "@/generated/prisma/client";
+import type { Post, User } from "@/generated/prisma/client";
 
 export type { Post };
 
+export type PostWithAuthor = Post & { author: { name: User["name"] } };
+
 export type PostsPage = {
-  posts: Post[];
+  posts: PostWithAuthor[];
   nextCursor: number | null;
 };

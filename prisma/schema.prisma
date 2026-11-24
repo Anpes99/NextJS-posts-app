@@ -15,6 +15,10 @@ model Post {
   text      String
   imageUrl  String?
   createdAt DateTime @default(now())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([authorId])
 }
 
 model User {
@@ -27,6 +31,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  posts         Post[]
 
   @@unique([email])
   @@map("user")

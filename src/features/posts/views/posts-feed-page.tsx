@@ -5,6 +5,7 @@ import { PostListSkeleton } from "../components/post-list-skeleton";
 import { PostsPagination } from "../components/posts-pagination";
 import { notFound } from "next/navigation";
 import { getPostsPage } from "../server/queries/get-posts-page";
+import { getSession } from "@/server/auth";
 import { ValidationError } from "@/server/errors";
 
 async function PostsFeed({
@@ -30,6 +31,11 @@ async function PostsFeed({
   );
 }
 
+async function CreatePost() {
+  const session = await getSession();
+  return session ? <CreatePostModal /> : null;
+}
+
 export function PostsFeedPage({
   searchParams,
 }: Pick<PageProps<"/">, "searchParams">) {
@@ -37,7 +43,9 @@ export function PostsFeedPage({
     <main className="mx-auto w-full max-w-2xl p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Posts</h1>
-        <CreatePostModal />
+        <Suspense fallback={null}>
+          <CreatePost />
+        </Suspense>
       </div>
       <Suspense fallback={<PostListSkeleton />}>
         <PostsFeed searchParams={searchParams} />

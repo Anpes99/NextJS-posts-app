@@ -1,7 +1,7 @@
-import type { Post } from "../types";
+import type { PostWithAuthor } from "../types";
 import { PostCard } from "./post-card";
 
-export function PostList({ posts }: { posts: Post[] }) {
+export function PostList({ posts }: { posts: PostWithAuthor[] }) {
   if (posts.length === 0) {
     return <p className="mt-6 text-gray-600 dark:text-gray-400">No posts yet.</p>;
   }

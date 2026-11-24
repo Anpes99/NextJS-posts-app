@@ -24,6 +24,7 @@ export async function PostDetail({ postId }: { postId: string }) {
     <EditablePost post={{ id: post.id, text: post.text }}>
       <article>
         <h1 className="text-3xl font-bold">{post.title}</h1>
+        <p className="mt-1 text-sm text-gray-500">by {post.author.name}</p>
         {post.imageUrl && (
           <div className="relative mt-4 aspect-video overflow-hidden rounded-lg">
             <Image

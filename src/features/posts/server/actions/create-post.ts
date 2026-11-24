@@ -1,5 +1,6 @@
 "use server";
 
+import { getSession } from "@/server/auth";
 import { ValidationError } from "@/server/errors";
 import { getClientIp, rateLimit } from "@/server/rate-limit";
 import { createPost } from "../mutations/create-post";
@@ -15,6 +16,11 @@ export type CreatePostResult =
 export async function createPostAction(
   formData: FormData,
 ): Promise<CreatePostResult> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, errors: {}, formError: "Sign in to create a post." };
+  }
+
   const ip = await getClientIp();
   if (
     !rateLimit({ key: `create-post:${ip}`, limit: 5, windowMs: 10 * 60_000 })
@@ -27,7 +33,10 @@ export async function createPostAction(
   }
 
   try {
-    await createPost(Object.fromEntries(formData));
+    await createPost({
+      input: Object.fromEntries(formData),
+      authorId: session.user.id,
+    });
     return { ok: true };
   } catch (error) {
     if (error instanceof ValidationError) {

@@ -29,6 +29,7 @@ async function getCachedPostsPage({
     where: cursor ? { id: { lt: cursor } } : undefined,
     orderBy: { id: "desc" },
     take: limit + 1,
+    include: { author: { select: { name: true } } },
   });
 
   const hasMore = rows.length > limit;
