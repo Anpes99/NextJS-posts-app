@@ -5,12 +5,14 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 import { ValidationError } from "@/server/errors";
+import { getClientIp, rateLimit } from "@/server/rate-limit";
 import { parseOrThrow } from "@/server/validation";
 import { signUpSchema } from "../../schemas";
 
 type SignUpState = {
-  errors: Record<string, string[] | undefined>;
   values: { name: string; email: string };
+  errors?: Record<string, string[] | undefined>;
+  formError?: string;
 } | null;
 
 const EMAIL_TAKEN_CODES = new Set([
@@ -26,6 +28,11 @@ export async function signUpAction(
     name: String(formData.get("name") ?? ""),
     email: String(formData.get("email") ?? ""),
   };
+
+  const ip = await getClientIp();
+  if (!rateLimit({ key: `sign-up:${ip}`, limit: 5, windowMs: 60 * 60_000 })) {
+    return { values, formError: "Too many sign-ups. Try again later." };
+  }
 
   try {
     const body = parseOrThrow({

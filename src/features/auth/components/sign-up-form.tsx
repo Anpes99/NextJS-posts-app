@@ -39,6 +39,12 @@ export function SignUpForm() {
         errors={state?.errors?.password}
       />
 
+      {state?.formError && (
+        <p role="alert" className="text-sm text-red-600">
+          {state.formError}
+        </p>
+      )}
+
       <button
         type="submit"
         disabled={pending}

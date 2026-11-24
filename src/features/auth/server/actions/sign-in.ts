@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 import { ValidationError } from "@/server/errors";
+import { getClientIp, rateLimit } from "@/server/rate-limit";
 import { parseOrThrow } from "@/server/validation";
 import { signInSchema } from "../../schemas";
 
@@ -19,6 +20,14 @@ export async function signInAction(
   formData: FormData,
 ): Promise<SignInState> {
   const values = { email: String(formData.get("email") ?? "") };
+
+  const ip = await getClientIp();
+  if (!rateLimit({ key: `sign-in:${ip}`, limit: 10, windowMs: 10 * 60_000 })) {
+    return {
+      values,
+      formError: "Too many sign-in attempts. Try again in a few minutes.",
+    };
+  }
 
   try {
     const body = parseOrThrow({
