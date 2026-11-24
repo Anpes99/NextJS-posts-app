@@ -29,6 +29,7 @@ export function CreatePostModal() {
       const result = await createPostAction(new FormData(form));
       if (!result.ok) {
         setErrors(result.errors);
+        setFormError(result.formError ?? null);
         return;
       }
       form.reset();
