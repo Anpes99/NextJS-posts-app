@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getSession } from "@/server/auth";
 import { getPost } from "../server/queries/get-post";
 import { EditablePost } from "./editable-post";
 
@@ -20,8 +21,17 @@ export async function PostDetail({ postId }: { postId: string }) {
     notFound();
   }
 
+  // Not awaited: the post renders right away, and only the author's edit, delete buttons wait
+  // for the session (unwrapped with use() behind a Suspense boundary).
+  const isOwnerPromise = getSession()
+    .then((session) => session?.user.id === post.authorId)
+    .catch(() => false);
+
   return (
-    <EditablePost post={{ id: post.id, text: post.text }}>
+    <EditablePost
+      post={{ id: post.id, text: post.text }}
+      isOwnerPromise={isOwnerPromise}
+    >
       <article>
         <h1 className="text-3xl font-bold">{post.title}</h1>
         <p className="mt-1 text-sm text-gray-500">by {post.author.name}</p>

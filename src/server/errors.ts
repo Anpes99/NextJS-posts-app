@@ -4,3 +4,10 @@ export class ValidationError extends Error {
     this.name = "ValidationError";
   }
 }
+
+export class ForbiddenError extends Error {
+  constructor(message = "Forbidden") {
+    super(message);
+    this.name = "ForbiddenError";
+  }
+}

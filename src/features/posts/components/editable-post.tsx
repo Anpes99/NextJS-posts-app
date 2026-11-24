@@ -1,16 +1,34 @@
 "use client";
 
-import { useState, type ReactNode, type SubmitEvent } from "react";
+import {
+  Suspense,
+  use,
+  useState,
+  type ReactNode,
+  type SubmitEvent,
+} from "react";
 import { deletePostAction } from "../server/actions/delete-post";
 import { updatePostAction } from "../server/actions/update-post";
 
 type FieldErrors = Record<string, string[] | undefined>;
 
+function OwnerOnly({
+  isOwnerPromise,
+  children,
+}: {
+  isOwnerPromise: Promise<boolean>;
+  children: ReactNode;
+}) {
+  return use(isOwnerPromise) ? children : null;
+}
+
 export function EditablePost({
   post,
+  isOwnerPromise,
   children,
 }: {
   post: { id: number; text: string };
+  isOwnerPromise: Promise<boolean>;
   children: ReactNode;
 }) {
   const [editing, setEditing] = useState(false);
@@ -48,28 +66,32 @@ export function EditablePost({
     return (
       <>
         {children}
-        <div className="mt-6 flex gap-2">
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="rounded border border-gray-300 px-4 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-          >
-            Edit
-          </button>
-          <form
-            action={() => deletePostAction(post.id)}
-            onSubmit={(event) => {
-              if (!confirm("Delete this post?")) event.preventDefault();
-            }}
-          >
-            <button
-              type="submit"
-              className="rounded border border-red-300 px-4 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
-            >
-              Delete
-            </button>
-          </form>
-        </div>
+        <Suspense fallback={null}>
+          <OwnerOnly isOwnerPromise={isOwnerPromise}>
+            <div className="mt-6 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="rounded border border-gray-300 px-4 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+              >
+                Edit
+              </button>
+              <form
+                action={() => deletePostAction(post.id)}
+                onSubmit={(event) => {
+                  if (!confirm("Delete this post?")) event.preventDefault();
+                }}
+              >
+                <button
+                  type="submit"
+                  className="rounded border border-red-300 px-4 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
+                >
+                  Delete
+                </button>
+              </form>
+            </div>
+          </OwnerOnly>
+        </Suspense>
       </>
     );
   }
