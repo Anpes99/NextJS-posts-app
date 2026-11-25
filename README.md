@@ -13,3 +13,5 @@ A small posts app (sign up, create, view, edit, delete) built to practice the co
 - Parallel + intercepting route modals
 - Proxy (`proxy.ts`) redirects for signed-in users
 - Error boundaries
+
+Also has 7 Vitest unit tests
