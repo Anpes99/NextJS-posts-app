@@ -1,7 +1,5 @@
 # Next.js Posts App
 
-[![CI](https://github.com/Anpes99/NextJS-posts-app/actions/workflows/ci.yml/badge.svg)](https://github.com/Anpes99/NextJS-posts-app/actions/workflows/ci.yml)
-
 A small posts app (sign up, create, view, edit, delete) built to practice the core features of Next.js 16:
 
 - App Router (layouts, dynamic routes, `loading` / `error` / `not-found` files)
